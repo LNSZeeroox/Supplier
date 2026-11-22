@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OrderTrack — Pengingat Pemesanan & Supplier WA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600&family=Poppins:wght@600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            heading: ['Poppins', 'sans-serif'],
+            body: ['Open Sans', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#eefaf3',
+              100: '#d5f2e1',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body {
+      font-family: 'Open Sans', sans-serif;
+      background-color: #f8fafc;
+      color: #0f172a;
+    }
+    h1, h2, h3, .font-heading {
+      font-family: 'Poppins', sans-serif;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 999px;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- HEADER -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+      <!-- Brand & Logo -->
+      <div class="flex items-center gap-3">
+        <button onclick="openModal('logoModal')" title="Klik untuk ganti logo" class="group relative w-11 h-11 rounded-xl bg-brand-600 text-white flex items-center justify-center overflow-hidden shadow-sm hover:ring-2 hover:ring-brand-500 transition">
+          <img id="headerLogoImg" src="" alt="Logo" class="hidden w-full h-full object-cover" />
+          <svg id="headerLogoSvg" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+          </svg>
+          <span class="absolute inset-0 bg-black/40 text-[9px] font-semibold text-white opacity-0 group-hover:opacity-100 flex items-center justify-center transition">Ubah</span>
+        </button>
+
+        <div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <h1 id="headerBrandTitle" onclick="openModal('logoModal')" class="text-lg sm:text-xl font-bold text-slate-900 cursor-pointer hover:text-brand-600 transition">OrderTrack</h1>
+            <button id="syncStatusBadge" onclick="openModal('serverModal')" title="Klik untuk atur server Firebase" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 hover:opacity-90 transition">
+              <span id="syncDot" class="w-2 h-2 rounded-full bg-amber-500"></span>
+              <span id="syncText">Mode Lokal (Klik Atur Server)</span>
+            </button>
+          </div>
+          <p id="headerBrandSubtitle" class="text-xs text-slate-500">Pengingat Pesanan & Order Supplier via WhatsApp</p>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center gap-2 flex-wrap">
+        <button onclick="openModal('manageModal')" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 transition">
+          <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+          Lini & Supplier
+        </button>
+
+        <button onclick="openModal('logoModal')" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 transition">
+          <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          Logo
+        </button>
+
+        <button onclick="openModal('teamModal')" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold transition">
+          <svg class="w-4 h-4 text-brand-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          <span>Tim: <strong id="headerRoomBadge">TIM-UTAMA</strong></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6">
+    <!-- Stats Bar -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+        <p class="text-xs text-slate-500 font-medium">Total Paket Pesanan</p>
+        <p id="statTotalOrders" class="text-2xl font-bold text-slate-900 mt-1">0</p>
+      </div>
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+        <p class="text-xs text-slate-500 font-medium">Belum Selesai</p>
+        <p id="statPendingOrders" class="text-2xl font-bold text-amber-600 mt-1">0</p>
+      </div>
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+        <p class="text-xs text-slate-500 font-medium">Sudah Selesai</p>
+        <p id="statDoneOrders" class="text-2xl font-bold text-brand-600 mt-1">0</p>
+      </div>
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+        <p class="text-xs text-slate-500 font-medium">Item Belum Diceklis</p>
+        <p id="statUncheckedItems" class="text-2xl font-bold text-blue-600 mt-1">0</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      <!-- LEFT COLUMN: FORM INPUT -->
+      <section class="lg:col-span-5 bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-base font-bold text-slate-900">Buat Pesanan Baru</h2>
+          <span class="text-xs text-slate-500">Oleh: <strong id="currentStaffLabel" class="text-slate-800">Admin</strong></span>
+        </div>
+
+        <form id="orderForm" class="space-y-4">
+          <!-- Lini Usaha -->
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="text-xs font-semibold text-slate-700">1. Lini Usaha</label>
+              <button type="button" onclick="toggleQuickAddLini()" class="text-xs font-semibold text-brand-600 hover:text-brand-700">+ Lini Baru</button>
+            </div>
+            <select id="liniSelect" required class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-500"></select>
+
+            <!-- Quick Add Lini -->
+            <div id="quickAddLiniBox" class="hidden mt-2 flex gap-2">
+              <input type="text" id="newLiniInput" placeholder="Nama lini usaha baru..." class="flex-1 px-3 py-2 rounded-lg border border-slate-300 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500" />
+              <button type="button" onclick="saveQuickLini()" class="px-3 py-2 rounded-lg bg-brand-600 text-white text-xs font-semibold hover:bg-brand-700">Simpan</button>
+            </div>
+          </div>
+
+          <!-- Supplier & WhatsApp -->
+          <div class="p-3.5 rounded-xl bg-emerald-50/70 border border-emerald-200 space-y-2.5">
+            <div class="flex items-center justify-between">
+              <label class="text-xs font-semibold text-emerald-900">2. Supplier & WhatsApp (Opsional)</label>
+              <span class="text-[11px] text-emerald-700">Otomatis tersimpan</span>
+            </div>
+
+            <select id="supplierSelect" onchange="handleSupplierSelectChange()" class="w-full px-3 py-2 rounded-lg border border-emerald-300 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+              <option value="">-- Pilih Supplier Tersimpan / Input Baru --</option>
+            </select>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <input type="text" id="supplierNameInput" placeholder="Nama Supplier (cth: MultiGrosir)" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-brand-500" />
+              <input type="tel" id="supplierWaInput" placeholder="No. WA (cth: 08123456789)" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-brand-500" />
+            </div>
+          </div>
+
+          <!-- Jam Pesanan Masuk & Catatan -->
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">3. Jam Masuk</label>
+              <input type="time" id="orderTimeInput" required class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Catatan / Pemesan</label>
+              <input type="text" id="orderNoteInput" placeholder="cth: Stok dapur / Meja 4" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+            </div>
+          </div>
+
+          <!-- Mode Input Barang -->
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <label class="text-xs font-semibold text-slate-700">4. Daftar Barang & Qty</label>
+              <div class="inline-flex rounded-lg bg-slate-100 p-0.5 text-xs">
+                <button type="button" id="tabManualBtn" onclick="switchInputMode('manual')" class="px-2.5 py-1 rounded-md font-semibold bg-white text-slate-900 shadow-sm">Input Baris</button>
+                <button type="button" id="tabPasteBtn" onclick="switchInputMode('paste')" class="px-2.5 py-1 rounded-md font-semibold text-slate-600 hover:text-slate-900">Paste WA</button>
+              </div>
+            </div>
+
+            <!-- Mode Manual Multi-Row -->
+            <div id="manualItemsWrapper" class="space-y-2">
+              <div id="itemsContainer" class="space-y-2 max-h-60 overflow-y-auto custom-scroll pr-1"></div>
+              <button type="button" onclick="addItemRow()" class="w-full py-2 rounded-xl border border-dashed border-brand-500 text-brand-700 hover:bg-brand-50 text-xs font-semibold transition">
+                + Tambah Barang Lainnya
+              </button>
+            </div>
+
+            <!-- Mode Bulk Paste WA -->
+            <div id="pasteItemsWrapper" class="hidden space-y-2">
+              <textarea id="bulkPasteInput" rows="4" placeholder="Tempel daftar dari WhatsApp di sini, contoh:&#10;1. Indomie ayam geprek 1 dus&#10;2. Indomie Cabe Ijo 1 dus&#10;Beras 5kg - 3 sak" class="w-full p-3 rounded-xl border border-slate-300 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500"></textarea>
+              <button type="button" onclick="parseBulkPaste()" class="w-full py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold transition">
+                Proses & Masukkan ke Baris Barang
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" class="w-full py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-heading font-semibold text-sm shadow-sm transition">
+            Simpan Paket Pesanan
+          </button>
+        </form>
+      </section>
+
+      <!-- RIGHT COLUMN: FILTER & ORDER LIST -->
+      <section class="lg:col-span-7 space-y-4">
+        <!-- Filter Bar -->
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            <input type="text" id="searchFilter" oninput="renderOrders()" placeholder="Cari barang, supplier, catatan..." class="px-3 py-2 rounded-xl border border-slate-300 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500" />
+            <select id="businessFilter" onchange="renderOrders()" class="px-3 py-2 rounded-xl border border-slate-300 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+              <option value="ALL">Semua Lini Usaha</option>
+            </select>
+            <select id="statusFilter" onchange="renderOrders()" class="px-3 py-2 rounded-xl border border-slate-300 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+              <option value="ALL">Semua Status</option>
+              <option value="PENDING">Belum Selesai</option>
+              <option value="DONE">Sudah Selesai</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Orders Container -->
+        <div id="ordersContainer" class="space-y-3.5"></div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="hidden bg-white rounded-2xl border border-slate-200 p-10 text-center">
+          <div class="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+          </div>
+          <h3 class="text-sm font-bold text-slate-800">Belum Ada Pesanan</h3>
+          <p class="text-xs text-slate-500 mt-1">Tambahkan pesanan di formulir sebelah kiri untuk mulai mencatat & kirim ke WhatsApp supplier.</p>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- MODAL 1: PENGATURAN SERVER FIREBASE (TANPA EDIT KODE) -->
+  <div id="serverModal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl space-y-4">
+      <div class="flex items-center justify-between">
+        <h3 class="text-base font-bold text-slate-900">Pengaturan Server Real-Time (Firebase)</h3>
+        <button onclick="closeModal('serverModal')" class="text-slate-400 hover:text-slate-700 text-lg font-bold">&times;</button>
+      </div>
+      <p class="text-xs text-slate-600 leading-relaxed">
+        Tempelkan kode <code class="bg-slate-100 px-1.5 py-0.5 rounded text-slate-800">firebaseConfig</code> dari Firebase Console Anda di bawah ini agar data tersinkronisasi ke semua HP/komputer tim. Jika dikosongkan, aplikasi otomatis berjalan menggunakan penyimpanan lokal browser.
+      </p>
+      <textarea id="firebaseConfigInput" rows="7" placeholder='Tempel objek konfigurasi Firebase di sini, contoh:&#10;{&#10;  apiKey: "AIzaSy...",&#10;  authDomain: "proyek.firebaseapp.com",&#10;  projectId: "proyek",&#10;  storageBucket: "proyek.firebasestorage.app",&#10;  messagingSenderId: "123456",&#10;  appId: "1:123456:web:abcdef"&#10;}' class="w-full p-3 rounded-xl border border-slate-300 font-mono text-xs focus:outline-none focus:ring-2 focus:ring-brand-500"></textarea>
+      <div id="serverErrorMsg" class="hidden text-xs text-red-600 bg-red-50 p-2.5 rounded-lg border border-red-200"></div>
+      <div class="flex items-center justify-between gap-2 pt-2">
+        <button type="button" onclick="resetFirebaseConfig()" class="px-3 py-2 rounded-xl border border-slate-300 text-xs font-semibold text-slate-600 hover:bg-slate-50">
+          Gunakan Mode Lokal
+        </button>
+        <div class="flex gap-2">
+          <button type="button" onclick="closeModal('serverModal')" class="px-4 py-2 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700">Batal</button>
+          <button type="button" onclick="saveFirebaseConfigFromUI()" class="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold">Simpan & Hubungkan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: PENGATURAN TIM -->
+  <div id="teamModal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4">
+      <div class="flex items-center justify-between">
+        <h3 class="text-base font-bold text-slate-900">Kolaborasi Tim & Identitas</h3>
+        <button onclick="closeModal('teamModal')" class="text-slate-400 hover:text-slate-700 text-lg font-bold">&times;</button>
+      </div>
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Anda (Staf Penginput)</label>
+          <input type="text" id="staffNameInput" placeholder="Contoh: Sakif / Rai / Kasir" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Kode Ruang Tim (Room ID)</label>
+          <input type="text" id="roomCodeInput" placeholder="Contoh: TIM-UTAMA" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm uppercase" />
+          <p class="text-[11px] text-slate-500 mt-1">Gunakan kode ruang yang sama di semua perangkat rekan kerja.</p>
+        </div>
+      </div>
+      <div class="flex items-center justify-between gap-2 pt-2">
+        <button type="button" onclick="copyInviteLink()" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold">
+          Salin Link Undang Tim
+        </button>
+        <button type="button" onclick="saveTeamSettings()" class="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold">
+          Terapkan
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 3: KELOLA LINI USAHA & SUPPLIER -->
+  <div id="manageModal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl space-y-4 max-h-[85vh] flex flex-col">
+      <div class="flex items-center justify-between">
+        <h3 class="text-base font-bold text-slate-900">Kelola Lini Usaha & Supplier WA</h3>
+        <button onclick="closeModal('manageModal')" class="text-slate-400 hover:text-slate-700 text-lg font-bold">&times;</button>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 overflow-y-auto custom-scroll pr-1">
+        <!-- Daftar Lini -->
+        <div class="space-y-2">
+          <h4 class="text-xs font-bold text-slate-700 uppercase">Daftar Lini Usaha</h4>
+          <div class="flex gap-1.5">
+            <input type="text" id="modalNewLiniInput" placeholder="Tambah lini..." class="flex-1 px-2.5 py-1.5 rounded-lg border border-slate-300 text-xs" />
+            <button onclick="addLiniFromModal()" class="px-2.5 py-1.5 rounded-lg bg-brand-600 text-white text-xs font-semibold">+</button>
+          </div>
+          <ul id="manageLiniList" class="space-y-1.5 text-xs"></ul>
+        </div>
+
+        <!-- Daftar Supplier -->
+        <div class="space-y-2">
+          <h4 class="text-xs font-bold text-slate-700 uppercase">Daftar Supplier & WA</h4>
+          <div class="space-y-1.5">
+            <input type="text" id="modalSupName" placeholder="Nama Supplier" class="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 text-xs" />
+            <div class="flex gap-1.5">
+              <input type="tel" id="modalSupWa" placeholder="No. WA (08...)" class="flex-1 px-2.5 py-1.5 rounded-lg border border-slate-300 text-xs" />
+              <button onclick="addSupplierFromModal()" class="px-2.5 py-1.5 rounded-lg bg-brand-600 text-white text-xs font-semibold">Simpan</button>
+            </div>
+          </div>
+          <ul id="manageSupplierList" class="space-y-1.5 text-xs"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 4: GANTI LOGO & BRANDING -->
+  <div id="logoModal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4">
+      <div class="flex items-center justify-between">
+        <h3 class="text-base font-bold text-slate-900">Ganti Logo & Nama Aplikasi</h3>
+        <button onclick="closeModal('logoModal')" class="text-slate-400 hover:text-slate-700 text-lg font-bold">&times;</button>
+      </div>
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Unggah Gambar Logo (HP/Komputer)</label>
+          <input type="file" id="logoFileInput" accept="image/*" onchange="handleLogoUpload(event)" class="w-full text-xs text-slate-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Atau Tempel URL Gambar Logo</label>
+          <input type="url" id="logoUrlInput" placeholder="https://..." class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Brand / Usaha</label>
+          <input type="text" id="brandTitleInput" placeholder="OrderTrack" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Subjudul Header</label>
+          <input type="text" id="brandSubtitleInput" placeholder="Pengingat Pesanan & Order Supplier via WhatsApp" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs" />
+        </div>
+      </div>
+      <div class="flex items-center justify-between pt-2">
+        <button type="button" onclick="resetBranding()" class="px-3 py-2 rounded-xl border border-slate-300 text-xs font-semibold text-slate-600 hover:bg-slate-50">Reset Bawaan</button>
+        <button type="button" onclick="saveBranding()" class="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold">Simpan Logo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 hidden bg-slate-900 text-white text-xs font-medium px-4 py-3 rounded-xl shadow-lg"></div>
+
+  <!-- FIREBASE & APPLICATION SCRIPT -->
+  <script type="module">
+    import { initializeApp, getApps, deleteApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import {
+      getFirestore, collection, doc, setDoc, addDoc, updateDoc, deleteDoc,
+      onSnapshot, serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // --- STATE ---
+    const DEFAULT_LINI = ["Warkop Amani", "Belanjain.id", "Amani Laundry Karpet", "SNAP Z Photobox"];
+    const DEFAULT_SUPPLIERS = [
+      { id: "sup-1", name: "MultiGrosir", wa: "081234567890" }
+    ];
+
+    const urlParams = new URLSearchParams(window.location.search);
+    let roomId = (urlParams.get("room") || localStorage.getItem("ot_room_id") || "TIM-UTAMA").toUpperCase();
+    let staffName = localStorage.getItem("ot_staff_name") || "Admin";
+
+    let liniList = JSON.parse(localStorage.getItem(`ot_lini_${roomId}`) || "null") || [...DEFAULT_LINI];
+    let supplierList = JSON.parse(localStorage.getItem(`ot_suppliers_${roomId}`) || "null") || [...DEFAULT_SUPPLIERS];
+    let ordersList = JSON.parse(localStorage.getItem(`ot_orders_${roomId}`) || "[]");
+    let branding = JSON.parse(localStorage.getItem(`ot_branding_${roomId}`) || "null") || {
+      title: "OrderTrack",
+      subtitle: "Pengingat Pesanan & Order Supplier via WhatsApp",
+      logo: ""
+    };
+
+    let db = null;
+    let isCloudConnected = false;
+    let unsubOrders = null;
+    let unsubMeta = null;
+
+    // --- HELPER UI ---
+    window.showToast = (msg) => {
+      const el = document.getElementById("toast");
+      el.textContent = msg;
+      el.classList.remove("hidden");
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => el.classList.add("hidden"), 3000);
+    };
+
+    window.openModal = (id) => {
+      if (id === "serverModal") {
+        document.getElementById("firebaseConfigInput").value = localStorage.getItem("ot_firebase_config_raw") || "";
+        document.getElementById("serverErrorMsg").classList.add("hidden");
+      } else if (id === "teamModal") {
+        document.getElementById("staffNameInput").value = staffName;
+        document.getElementById("roomCodeInput").value = roomId;
+      } else if (id === "logoModal") {
+        document.getElementById("logoUrlInput").value = branding.logo || "";
+        document.getElementById("brandTitleInput").value = branding.title || "OrderTrack";
+        document.getElementById("brandSubtitleInput").value = branding.subtitle || "";
+      } else if (id === "manageModal") {
+        renderManageLists();
+      }
+      document.getElementById(id).classList.remove("hidden");
+    };
+
+    window.closeModal = (id) => {
+      document.getElementById(id).classList.add("hidden");
+    };
+
+    function setSyncStatus(mode, text) {
+      const badge = document.getElementById("syncStatusBadge");
+      const dot = document.getElementById("syncDot");
+      const label = document.getElementById("syncText");
+      label.textContent = text;
+      badge.className = "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold transition cursor-pointer ";
+      dot.className = "w-2 h-2 rounded-full ";
+      if (mode === "live") {
+        badge.classList.add("bg-emerald-100", "text-emerald-800");
+        dot.classList.add("bg-emerald-500", "animate-pulse");
+      } else if (mode === "connecting") {
+        badge.classList.add("bg-blue-100", "text-blue-800");
+        dot.classList.add("bg-blue-500", "animate-ping");
+      } else {
+        badge.classList.add("bg-amber-100", "text-amber-800");
+        dot.classList.add("bg-amber-500");
+      }
+    }
+
+    function setDefaultTime() {
+      const now = new Date();
+      const hh = String(now.getHours()).padStart(2, "0");
+      const mm = String(now.getMinutes()).padStart(2, "0");
+      document.getElementById("orderTimeInput").value = `${hh}:${mm}`;
+    }
+
+    function saveLocalState() {
+      localStorage.setItem(`ot_lini_${roomId}`, JSON.stringify(liniList));
+      localStorage.setItem(`ot_suppliers_${roomId}`, JSON.stringify(supplierList));
+      localStorage.setItem(`ot_orders_${roomId}`, JSON.stringify(ordersList));
+      localStorage.setItem(`ot_branding_${roomId}`, JSON.stringify(branding));
+    }
+
+    // --- FORMAT NOMOR WA & PESAN ---
+    function formatPhoneToWA(phone) {
+      let digits = String(phone || "").replace(/\D/g, "");
+      if (!digits) return "";
+      if (digits.startsWith("0")) {
+        digits = "62" + digits.slice(1);
+      } else if (digits.startsWith("8")) {
+        digits = "62" + digits;
+      }
+      return digits;
+    }
+
+    function buildWhatsAppMessage(order) {
+      const lines = order.items.map((item, idx) => `${idx + 1}. ${item.name} — *${item.qty}*`).join("\n");
+      const noteLine = order.note ? `\nCatatan: _${order.note}_` : "";
+      const greeting = order.supplierName ? `Halo *${order.supplierName}*,` : `Halo,`;
+      return `${greeting}\nKami dari *${order.lini}* ingin memesan barang berikut:\n\n${lines}${noteLine}\n\nMohon info ketersediaan & totalnya ya. Terima kasih!`;
+    }
+
+    window.sendOrderToWA = (orderId) => {
+      const order = ordersList.find(o => o.id === orderId);
+      if (!order) return;
+      const waNumber = formatPhoneToWA(order.supplierWa);
+      if (!waNumber) {
+        showToast("Nomor WhatsApp supplier tidak valid.");
+        return;
+      }
+      const message = buildWhatsAppMessage(order);
+      const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
+      window.open(waUrl, "_blank");
+    };
+
+    window.copyOrderText = (orderId) => {
+      const order = ordersList.find(o => o.id === orderId);
+      if (!order) return;
+      const message = buildWhatsAppMessage(order);
+      navigator.clipboard.writeText(message).then(() => {
+        showToast("Format pesanan disalin ke clipboard!");
+      });
+    };
+
+    // --- RENDER DROPDOWNS & BRANDING ---
+    function applyBrandingUI() {
+      document.getElementById("headerBrandTitle").textContent = branding.title || "OrderTrack";
+      document.getElementById("headerBrandSubtitle").textContent = branding.subtitle || "Pengingat Pesanan & Order Supplier via WhatsApp";
+      const img = document.getElementById("headerLogoImg");
+      const svg = document.getElementById("headerLogoSvg");
+      if (branding.logo) {
+        img.src = branding.logo;
+        img.classList.remove("hidden");
+        svg.classList.add("hidden");
+      } else {
+        img.classList.add("hidden");
+        svg.classList.remove("hidden");
+      }
+    }
+
+    function renderDropdowns() {
+      const liniSelect = document.getElementById("liniSelect");
+      const businessFilter = document.getElementById("businessFilter");
+      const currentLini = liniSelect.value;
+      const currentFilter = businessFilter.value;
+
+      liniSelect.innerHTML = liniList.map(l => `<option value="${escapeHtml(l)}">${escapeHtml(l)}</option>`).join("");
+      if (liniList.includes(currentLini)) liniSelect.value = currentLini;
+
+      businessFilter.innerHTML = `<option value="ALL">Semua Lini Usaha</option>` +
+        liniList.map(l => `<option value="${escapeHtml(l)}">${escapeHtml(l)}</option>`).join("");
+      if (currentFilter) businessFilter.value = currentFilter;
+
+      const supSelect = document.getElementById("supplierSelect");
+      supSelect.innerHTML = `<option value="">-- Pilih Supplier Tersimpan / Input Baru --</option>` +
+        supplierList.map(s => `<option value="${s.id}">${escapeHtml(s.name)} (${escapeHtml(s.wa)})</option>`).join("");
+    }
+
+    window.handleSupplierSelectChange = () => {
+      const id = document.getElementById("supplierSelect").value;
+      const sup = supplierList.find(s => s.id === id);
+      if (sup) {
+        document.getElementById("supplierNameInput").value = sup.name;
+        document.getElementById("supplierWaInput").value = sup.wa;
+      }
+    };
+
+    // --- MULTI-ITEM ROWS & PASTE WA ---
+    window.addItemRow = (name = "", qty = "") => {
+      const container = document.getElementById("itemsContainer");
+      const row = document.createElement("div");
+      row.className = "item-row flex items-center gap-2";
+      row.innerHTML = `
+        <input type="text" placeholder="Nama barang (cth: Indomie Ayam Geprek)" value="${escapeHtml(name)}" class="item-name flex-1 px-3 py-2 rounded-xl border border-slate-300 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500" required />
+        <input type="text" placeholder="Qty (cth: 1 dus)" value="${escapeHtml(qty)}" class="item-qty w-28 px-3 py-2 rounded-xl border border-slate-300 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500" required />
+        <button type="button" onclick="removeItemRow(this)" title="Hapus baris" class="p-2 text-slate-400 hover:text-red-500 font-bold text-sm">&times;</button>
+      `;
+      container.appendChild(row);
+    };
+
+    window.removeItemRow = (btn) => {
+      const container = document.getElementById("itemsContainer");
+      if (container.children.length > 1) {
+        btn.parentElement.remove();
+      } else {
+        btn.parentElement.querySelector(".item-name").value = "";
+        btn.parentElement.querySelector(".item-qty").value = "";
+      }
+    };
+
+    window.switchInputMode = (mode) => {
+      const manualWrap = document.getElementById("manualItemsWrapper");
+      const pasteWrap = document.getElementById("pasteItemsWrapper");
+      const tabManual = document.getElementById("tabManualBtn");
+      const tabPaste = document.getElementById("tabPasteBtn");
+
+      if (mode === "manual") {
+        manualWrap.classList.remove("hidden");
+        pasteWrap.classList.add("hidden");
+        tabManual.className = "px-2.5 py-1 rounded-md font-semibold bg-white text-slate-900 shadow-sm";
+        tabPaste.className = "px-2.5 py-1 rounded-md font-semibold text-slate-600 hover:text-slate-900";
+      } else {
+        manualWrap.classList.add("hidden");
+        pasteWrap.classList.remove("hidden");
+        tabPaste.className = "px-2.5 py-1 rounded-md font-semibold bg-white text-slate-900 shadow-sm";
+        tabManual.className = "px-2.5 py-1 rounded-md font-semibold text-slate-600 hover:text-slate-900";
+      }
+    };
+
+    window.parseBulkPaste = () => {
+      const raw = document.getElementById("bulkPasteInput").value.trim();
+      if (!raw) return showToast("Tempelkan daftar pesanan terlebih dahulu.");
+
+      const lines = raw.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+      const parsed = [];
+
+      for (let line of lines) {
+        // Hapus nomor urut depan seperti "1. ", "- ", "* "
+        line = line.replace(/^(\d+[\.\)\-]\s*|[\-\*\•]\s*)/, "").trim();
+        if (!line) continue;
+
+        let name = line;
+        let qty = "1 pcs";
+
+        // Pola pemisah "-" atau ":" atau "=" atau "x" atau angka+satuan di akhir
+        const sepMatch = line.match(/^(.+?)\s*(?:[\-\:\=]|x(?=\s*\d))\s*(.+)$/i);
+        const tailQtyMatch = line.match(/^(.+?)\s+(\d+(?:[\.,]\d+)?\s*(?:dus|pcs|box|sak|kg|gr|gram|liter|ltr|pack|pak|renteng|krat|ikat|karung|botol|kaleng|bungkus|bks|porsi|cup|buah|unit|lusin|kodi|rim))$/i);
+
+        if (sepMatch) {
+          name = sepMatch[1].trim();
+          qty = sepMatch[2].trim();
+        } else if (tailQtyMatch) {
+          name = tailQtyMatch[1].trim();
+          qty = tailQtyMatch[2].trim();
+        }
+        parsed.push({ name, qty });
+      }
+
+      if (parsed.length > 0) {
+        const container = document.getElementById("itemsContainer");
+        container.innerHTML = "";
+        parsed.forEach(p => addItemRow(p.name, p.qty));
+        document.getElementById("bulkPasteInput").value = "";
+        switchInputMode("manual");
+        showToast(`${parsed.length} barang berhasil dipisahkan!`);
+      }
+    };
+
+    // --- QUICK ADD LINI ---
+    window.toggleQuickAddLini = () => {
+      document.getElementById("quickAddLiniBox").classList.toggle("hidden");
+    };
+
+    window.saveQuickLini = async () => {
+      const val = document.getElementById("newLiniInput").value.trim();
+      if (!val) return;
+      if (!liniList.includes(val)) {
+        liniList.push(val);
+        await syncMetaToCloud();
+        saveLocalState();
+        renderDropdowns();
+      }
+      document.getElementById("liniSelect").value = val;
+      document.getElementById("newLiniInput").value = "";
+      document.getElementById("quickAddLiniBox").classList.add("hidden");
+      showToast(`Lini "${val}" ditambahkan.`);
+    };
+
+    // --- SUBMIT ORDER ---
+    document.getElementById("orderForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const lini = document.getElementById("liniSelect").value;
+      const supplierName = document.getElementById("supplierNameInput").value.trim();
+      const supplierWa = document.getElementById("supplierWaInput").value.trim();
+      const time = document.getElementById("orderTimeInput").value;
+      const note = document.getElementById("orderNoteInput").value.trim();
+
+      const rows = document.querySelectorAll("#itemsContainer .item-row");
+      const items = [];
+      rows.forEach((r, idx) => {
+        const name = r.querySelector(".item-name").value.trim();
+        const qty = r.querySelector(".item-qty").value.trim();
+        if (name) {
+          items.push({
+            id: `item-${Date.now()}-${idx}`,
+            name,
+            qty: qty || "1",
+            checked: false,
+            checkedBy: ""
+          });
+        }
+      });
+
+      if (items.length === 0) {
+        showToast("Masukkan minimal 1 barang pesanan.");
+        return;
+      }
+
+      // Simpan supplier baru ke daftar jika belum ada
+      if (supplierName && supplierWa) {
+        const existing = supplierList.find(s => s.name.toLowerCase() === supplierName.toLowerCase());
+        if (existing) {
+          existing.wa = supplierWa;
+        } else {
+          supplierList.push({
+            id: `sup-${Date.now()}`,
+            name: supplierName,
+            wa: supplierWa
+          });
+        }
+        await syncMetaToCloud();
+        renderDropdowns();
+      }
+
+      const newOrder = {
+        id: `ord-${Date.now()}`,
+        lini,
+        supplierName,
+        supplierWa,
+        time,
+        note,
+        items,
+        createdBy: staffName,
+        createdAt: Date.now()
+      };
+
+      if (isCloudConnected && db) {
+        try {
+          const { id, ...payload } = newOrder;
+          await addDoc(collection(db, "rooms", roomId, "orders"), {
+            ...payload,
+            serverCreatedAt: serverTimestamp()
+          });
+        } catch (err) {
+          console.error(err);
+          ordersList.unshift(newOrder);
+          saveLocalState();
+          renderOrders();
+        }
+      } else {
+        ordersList.unshift(newOrder);
+        saveLocalState();
+        renderOrders();
+      }
+
+      // Reset form items
+      document.getElementById("itemsContainer").innerHTML = "";
+      addItemRow();
+      document.getElementById("orderNoteInput").value = "";
+      setDefaultTime();
+      showToast("Paket pesanan tersimpan!");
+    });
+
+    // --- CHECKLIST & DELETE ACTIONS ---
+    window.toggleItemCheck = async (orderId, itemIndex) => {
+      const order = ordersList.find(o => o.id === orderId);
+      if (!order || !order.items[itemIndex]) return;
+
+      const updatedItems = order.items.map((it, idx) => {
+        if (idx === itemIndex) {
+          const nextChecked = !it.checked;
+          return { ...it, checked: nextChecked, checkedBy: nextChecked ? staffName : "" };
+        }
+        return it;
+      });
+
+      if (isCloudConnected && db) {
+        await updateDoc(doc(db, "rooms", roomId, "orders", orderId), { items: updatedItems });
+      } else {
+        order.items = updatedItems;
+        saveLocalState();
+        renderOrders();
+      }
+    };
+
+    window.toggleAllOrderItems = async (orderId) => {
+      const order = ordersList.find(o => o.id === orderId);
+      if (!order) return;
+      const allChecked = order.items.every(i => i.checked);
+      const updatedItems = order.items.map(it => ({
+        ...it,
+        checked: !allChecked,
+        checkedBy: !allChecked ? staffName : ""
+      }));
+
+      if (isCloudConnected && db) {
+        await updateDoc(doc(db, "rooms", roomId, "orders", orderId), { items: updatedItems });
+      } else {
+        order.items = updatedItems;
+        saveLocalState();
+        renderOrders();
+      }
+    };
+
+    window.deleteOrder = async (orderId) => {
+      if (!confirm("Hapus paket pesanan ini?")) return;
+      if (isCloudConnected && db) {
+        await deleteDoc(doc(db, "rooms", roomId, "orders", orderId));
+      } else {
+        ordersList = ordersList.filter(o => o.id !== orderId);
+        saveLocalState();
+        renderOrders();
+      }
+      showToast("Pesanan dihapus.");
+    };
+
+    // --- RENDER ORDERS & STATS ---
+    window.renderOrders = () => {
+      const search = document.getElementById("searchFilter").value.toLowerCase();
+      const bizFilter = document.getElementById("businessFilter").value;
+      const statFilter = document.getElementById("statusFilter").value;
+
+      // Update Stats
+      let pendingCount = 0;
+      let doneCount = 0;
+      let uncheckedItemsCount = 0;
+
+      ordersList.forEach(o => {
+        const isDone = o.items.length > 0 && o.items.every(i => i.checked);
+        if (isDone) doneCount++;
+        else pendingCount++;
+        o.items.forEach(i => { if (!i.checked) uncheckedItemsCount++; });
+      });
+
+      document.getElementById("statTotalOrders").textContent = ordersList.length;
+      document.getElementById("statPendingOrders").textContent = pendingCount;
+      document.getElementById("statDoneOrders").textContent = doneCount;
+      document.getElementById("statUncheckedItems").textContent = uncheckedItemsCount;
+
+      // Filter
+      const filtered = ordersList.filter(o => {
+        const isDone = o.items.length > 0 && o.items.every(i => i.checked);
+        if (bizFilter !== "ALL" && o.lini !== bizFilter) return false;
+        if (statFilter === "PENDING" && isDone) return false;
+        if (statFilter === "DONE" && !isDone) return false;
+        if (search) {
+          const hay = [
+            o.lini,
+            o.supplierName || "",
+            o.supplierWa || "",
+            o.note || "",
+            ...o.items.map(i => `${i.name} ${i.qty}`)
+          ].join(" ").toLowerCase();
+          if (!hay.includes(search)) return false;
+        }
+        return true;
+      });
+
+      const container = document.getElementById("ordersContainer");
+      const empty = document.getElementById("emptyState");
+
+      if (filtered.length === 0) {
+        container.innerHTML = "";
+        empty.classList.remove("hidden");
+        return;
+      }
+
+      empty.classList.add("hidden");
+      container.innerHTML = filtered.map(order => {
+        const checkedTotal = order.items.filter(i => i.checked).length;
+        const totalItems = order.items.length;
+        const isAllDone = totalItems > 0 && checkedTotal === totalItems;
+        const hasWa = Boolean(formatPhoneToWA(order.supplierWa));
+
+        const itemsHtml = order.items.map((item, idx) => `
+          <label class="flex items-center justify-between gap-3 p-2.5 rounded-xl border ${item.checked ? "bg-slate-50 border-slate-200" : "bg-white border-slate-200 hover:border-brand-500"} cursor-pointer transition">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <input type="checkbox" ${item.checked ? "checked" : ""} onchange="toggleItemCheck('${order.id}', ${idx})" class="w-4 h-4 rounded text-brand-600 focus:ring-brand-500 cursor-pointer" />
+              <span class="text-xs sm:text-sm truncate ${item.checked ? "line-through text-slate-400" : "text-slate-800 font-medium"}">${escapeHtml(item.name)}</span>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+              ${item.checked && item.checkedBy ? `<span class="text-[10px] text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">✓ ${escapeHtml(item.checkedBy)}</span>` : ""}
+              <span class="px-2.5 py-0.5 rounded-lg text-xs font-bold ${item.checked ? "bg-slate-200 text-slate-500" : "bg-blue-50 text-blue-700"}">${escapeHtml(item.qty)}</span>
+            </div>
+          </label>
+        `).join("");
+
+        return `
+          <article class="bg-white rounded-2xl border ${isAllDone ? "border-emerald-200 bg-emerald-50/20" : "border-slate-200"} shadow-sm p-4 sm:p-5 space-y-3 transition">
+            <div class="flex flex-wrap items-start justify-between gap-2">
+              <div class="space-y-1">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="px-2.5 py-0.5 rounded-lg text-xs font-bold bg-slate-900 text-white">${escapeHtml(order.lini)}</span>
+                  <span class="text-xs font-semibold text-slate-600">🕒 ${escapeHtml(order.time || "-")}</span>
+                  <span class="text-xs font-semibold ${isAllDone ? "text-brand-600" : "text-amber-600"}">(${checkedTotal}/${totalItems} siap)</span>
+                </div>
+                ${order.note ? `<p class="text-xs text-slate-500">Catatan: <span class="text-slate-700 font-medium">${escapeHtml(order.note)}</span></p>` : ""}
+              </div>
+
+              <div class="flex items-center gap-1.5">
+                <button onclick="toggleAllOrderItems('${order.id}')" class="px-2.5 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-xs font-semibold text-slate-700">
+                  ${isAllDone ? "Batal Cek" : "Cek Semua"}
+                </button>
+                <button onclick="deleteOrder('${order.id}')" title="Hapus pesanan" class="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Supplier & WhatsApp Action Bar -->
+            ${(order.supplierName || hasWa) ? `
+              <div class="flex flex-wrap items-center justify-between gap-2 p-2.5 rounded-xl bg-emerald-50 border border-emerald-200">
+                <div class="text-xs">
+                  <span class="text-emerald-800 font-medium">Supplier:</span>
+                  <strong class="text-emerald-950">${escapeHtml(order.supplierName || "Supplier")}</strong>
+                  ${order.supplierWa ? `<span class="text-emerald-700 ml-1">(${escapeHtml(order.supplierWa)})</span>` : ""}
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <button onclick="copyOrderText('${order.id}')" class="px-2.5 py-1.5 rounded-lg bg-white border border-emerald-300 hover:bg-emerald-100 text-emerald-800 text-xs font-semibold transition">
+                    Salin Teks
+                  </button>
+                  ${hasWa ? `
+                    <button onclick="sendOrderToWA('${order.id}')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-xs transition">
+                      <span>Kirim ke WA</span>
+                    </button>
+                  ` : ""}
+                </div>
+              </div>
+            ` : `
+              <div class="flex justify-end">
+                <button onclick="copyOrderText('${order.id}')" class="text-xs font-semibold text-slate-500 hover:text-slate-800">
+                  Salin Format Pesanan
+                </button>
+              </div>
+            `}
+
+            <!-- Checklist Items -->
+            <div class="space-y-1.5">
+              ${itemsHtml}
+            </div>
+
+            <div class="text-[11px] text-slate-400 flex justify-between pt-1">
+              <span>Diinput oleh ${escapeHtml(order.createdBy || "Staf")}</span>
+            </div>
+          </article>
+        `;
+      }).join("");
+    };
+
+    // --- MANAGE MODAL ACTIONS ---
+    function renderManageLists() {
+      const liniUl = document.getElementById("manageLiniList");
+      liniUl.innerHTML = liniList.map((l, i) => `
+        <li class="flex items-center justify-between p-2 rounded-lg bg-slate-50 border border-slate-200">
+          <span class="font-medium text-slate-800">${escapeHtml(l)}</span>
+          ${liniList.length > 1 ? `<button onclick="deleteLini(${i})" class="text-red-500 hover:text-red-700 font-bold">&times;</button>` : ""}
+        </li>
+      `).join("");
+
+      const supUl = document.getElementById("manageSupplierList");
+      supUl.innerHTML = supplierList.map((s, i) => `
+        <li class="flex items-center justify-between p-2 rounded-lg bg-slate-50 border border-slate-200">
+          <div>
+            <p class="font-semibold text-slate-800">${escapeHtml(s.name)}</p>
+            <p class="text-[11px] text-slate-500">${escapeHtml(s.wa)}</p>
+          </div>
+          <button onclick="deleteSupplier(${i})" class="text-red-500 hover:text-red-700 font-bold">&times;</button>
+        </li>
+      `).join("");
+    }
+
+    window.addLiniFromModal = async () => {
+      const inp = document.getElementById("modalNewLiniInput");
+      const val = inp.value.trim();
+      if (!val || liniList.includes(val)) return;
+      liniList.push(val);
+      inp.value = "";
+      await syncMetaToCloud();
+      saveLocalState();
+      renderDropdowns();
+      renderManageLists();
+    };
+
+    window.deleteLini = async (idx) => {
+      liniList.splice(idx, 1);
+      await syncMetaToCloud();
+      saveLocalState();
+      renderDropdowns();
+      renderManageLists();
+    };
+
+    window.addSupplierFromModal = async () => {
+      const name = document.getElementById("modalSupName").value.trim();
+      const wa = document.getElementById("modalSupWa").value.trim();
+      if (!name || !wa) return showToast("Isi nama dan nomor WA supplier.");
+      supplierList.push({ id: `sup-${Date.now()}`, name, wa });
+      document.getElementById("modalSupName").value = "";
+      document.getElementById("modalSupWa").value = "";
+      await syncMetaToCloud();
+      saveLocalState();
+      renderDropdowns();
+      renderManageLists();
+    };
+
+    window.deleteSupplier = async (idx) => {
+      supplierList.splice(idx, 1);
+      await syncMetaToCloud();
+      saveLocalState();
+      renderDropdowns();
+      renderManageLists();
+    };
+
+    // --- BRANDING & LOGO ---
+    window.handleLogoUpload = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          const size = 128;
+          canvas.width = size;
+          canvas.height = size;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, size, size);
+          document.getElementById("logoUrlInput").value = canvas.toDataURL("image/png", 0.85);
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    };
+
+    window.saveBranding = async () => {
+      branding = {
+        logo: document.getElementById("logoUrlInput").value.trim(),
+        title: document.getElementById("brandTitleInput").value.trim() || "OrderTrack",
+        subtitle: document.getElementById("brandSubtitleInput").value.trim()
+      };
+      await syncMetaToCloud();
+      saveLocalState();
+      applyBrandingUI();
+      closeModal("logoModal");
+      showToast("Logo & identitas diperbarui!");
+    };
+
+    window.resetBranding = async () => {
+      branding = {
+        logo: "",
+        title: "OrderTrack",
+        subtitle: "Pengingat Pesanan & Order Supplier via WhatsApp"
+      };
+      await syncMetaToCloud();
+      saveLocalState();
+      applyBrandingUI();
+      closeModal("logoModal");
+      showToast("Logo dikembalikan ke bawaan.");
+    };
+
+    // --- TEAM SETTINGS ---
+    window.saveTeamSettings = () => {
+      const newStaff = document.getElementById("staffNameInput").value.trim() || "Admin";
+      const newRoom = (document.getElementById("roomCodeInput").value.trim() || "TIM-UTAMA").toUpperCase();
+      staffName = newStaff;
+      localStorage.setItem("ot_staff_name", staffName);
+      document.getElementById("currentStaffLabel").textContent = staffName;
+
+      if (newRoom !== roomId) {
+        roomId = newRoom;
+        localStorage.setItem("ot_room_id", roomId);
+        document.getElementById("headerRoomBadge").textContent = roomId;
+        if (isCloudConnected && db) {
+          subscribeRoomData();
+        } else {
+          ordersList = JSON.parse(localStorage.getItem(`ot_orders_${roomId}`) || "[]");
+          renderOrders();
+        }
+      }
+      closeModal("teamModal");
+      showToast(`Terhubung sebagai ${staffName} di ruang ${roomId}`);
+    };
+
+    window.copyInviteLink = () => {
+      const url = new URL(window.location.href);
+      url.searchParams.set("room", roomId);
+      navigator.clipboard.writeText(url.toString()).then(() => {
+        showToast("Link ruang tim berhasil disalin!");
+      });
+    };
+
+    // --- FIREBASE SERVER CONFIG PARSER & SYNC ---
+    function parseFirebaseConfigString(raw) {
+      if (!raw) return null;
+      try {
+        return JSON.parse(raw);
+      } catch (_) {
+        // Mendukung copy-paste langsung object JS dari Firebase Console (key tanpa tanda kutip)
+        const objMatch = raw.match(/\{[\s\S]*\}/);
+        if (!objMatch) return null;
+        const jsonLike = objMatch[0]
+          .replace(/(['"])?([a-zA-Z0-9_]+)(['"])?\s*:/g, '"$2":')
+          .replace(/'/g, '"')
+          .replace(/,\s*}/g, '}');
+        return JSON.parse(jsonLike);
+      }
+    }
+
+    window.saveFirebaseConfigFromUI = async () => {
+      const raw = document.getElementById("firebaseConfigInput").value.trim();
+      const errBox = document.getElementById("serverErrorMsg");
+      errBox.classList.add("hidden");
+
+      if (!raw) {
+        resetFirebaseConfig();
+        return;
+      }
+
+      try {
+        const parsed = parseFirebaseConfigString(raw);
+        if (!parsed || !parsed.apiKey || !parsed.projectId) {
+          throw new Error("Format tidak valid. Pastikan memuat apiKey dan projectId.");
+        }
+        localStorage.setItem("ot_firebase_config_raw", raw);
+        localStorage.setItem("ot_firebase_config_json", JSON.stringify(parsed));
+        closeModal("serverModal");
+        await connectToFirebase(parsed);
+      } catch (err) {
+        errBox.textContent = "Gagal membaca konfigurasi: " + err.message;
+        errBox.classList.remove("hidden");
+      }
+    };
+
+    window.resetFirebaseConfig = async () => {
+      localStorage.removeItem("ot_firebase_config_raw");
+      localStorage.removeItem("ot_firebase_config_json");
+      if (unsubOrders) unsubOrders();
+      if (unsubMeta) unsubMeta();
+      isCloudConnected = false;
+      db = null;
+      setSyncStatus("local", "Mode Lokal (Klik Atur Server)");
+      closeModal("serverModal");
+      ordersList = JSON.parse(localStorage.getItem(`ot_orders_${roomId}`) || "[]");
+      renderOrders();
+      showToast("Beralih ke Mode Penyimpanan Lokal.");
+    };
+
+    async function syncMetaToCloud() {
+      if (!isCloudConnected || !db) return;
+      try {
+        await setDoc(doc(db, "rooms", roomId, "meta", "config"), {
+          liniList,
+          supplierList,
+          branding,
+          updatedAt: serverTimestamp()
+        }, { merge: true });
+      } catch (e) {
+        console.error("Gagal sinkron metadata:", e);
+      }
+    }
+
+    function subscribeRoomData() {
+      if (unsubOrders) unsubOrders();
+      if (unsubMeta) unsubMeta();
+
+      unsubMeta = onSnapshot(doc(db, "rooms", roomId, "meta", "config"), (snap) => {
+        if (snap.exists()) {
+          const data = snap.data();
+          if (Array.isArray(data.liniList) && data.liniList.length) liniList = data.liniList;
+          if (Array.isArray(data.supplierList)) supplierList = data.supplierList;
+          if (data.branding) branding = data.branding;
+          saveLocalState();
+          renderDropdowns();
+          applyBrandingUI();
+        } else {
+          syncMetaToCloud();
+        }
+      });
+
+      unsubOrders = onSnapshot(collection(db, "rooms", roomId, "orders"), (snapshot) => {
+        const list = [];
+        snapshot.forEach(d => {
+          list.push({ id: d.id, ...d.data() });
+        });
+        list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+        ordersList = list;
+        saveLocalState();
+        renderOrders();
+      }, (err) => {
+        console.error("Firestore error:", err);
+        setSyncStatus("local", "Error Akses Firestore (Cek Rules)");
+      });
+    }
+
+    async function connectToFirebase(configObj) {
+      try {
+        setSyncStatus("connecting", "Menghubungkan...");
+        const existingApps = getApps();
+        for (const a of existingApps) {
+          await deleteApp(a);
+        }
+        const app = initializeApp(configObj);
+        const auth = getAuth(app);
+        db = getFirestore(app);
+
+        await signInAnonymously(auth);
+        onAuthStateChanged(auth, (user) => {
+          if (user) {
+            isCloudConnected = true;
+            setSyncStatus("live", "Live Sync Aktif");
+            subscribeRoomData();
+          }
+        });
+      } catch (err) {
+        console.error("Firebase init error:", err);
+        isCloudConnected = false;
+        setSyncStatus("local", "Gagal Konek (Klik Cek Server)");
+        showToast("Gagal konek Firebase: " + err.message);
+      }
+    }
+
+    function escapeHtml(str) {
+      return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    // --- INIT ---
+    document.getElementById("headerRoomBadge").textContent = roomId;
+    document.getElementById("currentStaffLabel").textContent = staffName;
+    setDefaultTime();
+    addItemRow();
+    renderDropdowns();
+    applyBrandingUI();
+    renderOrders();
+
+    const savedConfigJson = localStorage.getItem("ot_firebase_config_json");
+    if (savedConfigJson) {
+      connectToFirebase(JSON.parse(savedConfigJson));
+    }
+  </script>
+</body>
+</html>
